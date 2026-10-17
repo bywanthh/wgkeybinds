@@ -187,6 +187,6 @@ keys (default **R** / **G**) which send ability IDs `1` / `2` to the server over
 * Build it yourself: `cd fabric && gradlew.bat build` (JDK 25 for Gradle, the mod targets Java 21).
 * License: **MIT**.
 
-## Связь
+## Связь с автором
 
-Discord: https://discord.gg/ubT3GMsqwh · Telegram: https://t.me/WildeGate
+Discord: [https://discord.gg/EYqdKVCFjX](https://discord.gg/EYqdKVCFjX) · Telegram: [https://t.me/bywanthh](https://t.me/bywanthh)
