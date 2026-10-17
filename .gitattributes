@@ -1,0 +1,14 @@
+# Нормализация переводов строк: сами файлы в репозитории — LF.
+* text=auto
+
+# Скрипты-шелл должны остаться LF, иначе ./gradlew сломается на Linux/macOS
+gradlew   text eol=lf
+*.sh      text eol=lf
+*.bat     text eol=crlf
+
+# Бинарные файлы не трогаем
+*.jar     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary

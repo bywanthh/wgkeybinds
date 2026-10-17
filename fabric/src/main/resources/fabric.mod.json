@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "wildegate",
+	"version": "${version}",
+	"name": "WildeGate KeyBinds",
+	"description": "Мод написан специально для WildeGate для бинда активных способностей рас. Открытый код есть на github: https://github.com/bywanthh/wgkeybinds",
+	"authors": [
+		"#bywanthh"
+	],
+	"license": "MIT",
+	"icon": "assets/wildegate/icon.png",
+	"contact": {
+		"homepage": "https://github.com/bywanthh/wgkeybinds",
+		"sources": "https://github.com/bywanthh/wgkeybinds",
+		"issues": "https://github.com/bywanthh/wgkeybinds/issues"
+	},
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"ru.wildegate.keys.WildeGateKeysClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

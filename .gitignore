@@ -1,0 +1,29 @@
+# --- Gradle / Loom / ModDevGradle ---
+.gradle/
+build/
+out/
+run/
+logs/
+src/generated/
+**/build/
+**/.gradle/
+**/run/
+
+# --- IDE ---
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+
+# --- ОС ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Прочее ---
+*.log
+*.tmp

@@ -1,0 +1,31 @@
+license="${mod_license}"
+issueTrackerURL="https://github.com/bywanthh/wgkeybinds/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="#bywanthh"
+displayURL="https://github.com/bywanthh/wgkeybinds"
+logoFile="icon.png"
+description='''
+Мод написан специально для WildeGate для бинда активных способностей рас.
+Открытый код есть на github: https://github.com/bywanthh/wgkeybinds
+'''
+# Мини-хендшейк: при входе клиент отправляет пакет wildegate:keys с ID 0,
+# по нему сервер сразу понимает, что у игрока есть мод, и отключает старые жесты.
+# Мод клиентский (side=CLIENT), на сервер ставить не нужно.
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="CLIENT"
