@@ -1,2 +1,2 @@
-a1dd09e03e451a9183562dc7ca06719d9c62f3576178f2bd8d3b22161b4988cb  wgkeybinds-fabric-1.0.jar
-d454cb35f084d5751235b594e1c5d6454420fcbbe4eb8d923b641c9506d2b3a6  wgkeybinds-neoforge-1.0.jar
+bd4ff79cf5c8c3bb4af248bd536c55b764d146c5ed49471be9a5c78787e387d4  wgkeybinds-fabric-1.1.jar
+f71f6244b995e3ddb5c5b834f160cf624f59b0f9a786b00a888221527ded6fe3  wgkeybinds-neoforge-1.1.jar

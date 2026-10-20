@@ -1,6 +1,8 @@
 package ru.wildegate.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -8,6 +10,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -23,7 +27,8 @@ import org.lwjgl.glfw.GLFW;
  *       командный резервный путь: {@code /wgkey <ник> <1|2>}.</li>
  *   <li>При входе в мир отправляет мини-хендшейк (VarInt 0): по нему серверная часть
  *       сразу отключает старые жесты (двойной F / Shift+F) — они нужны только
- *       игрокам без мода.</li>
+ *       игрокам без мода. Если моста нет, но сервер знает {@code /wgkey}, хендшейк
+ *       уходит этой же командой.</li>
  * </ul>
  */
 public class WildeGateKeysClient implements ClientModInitializer {
@@ -77,9 +82,10 @@ public class WildeGateKeysClient implements ClientModInitializer {
 	 * установлен мод. Серверная часть по нему помечает игрока и сразу отключает
 	 * старые жесты — остаётся только работа по биндам.
 	 *
-	 * <p>Если сервер канал не объявил (мост-плагин не установлен), отправлять нечего:
-	 * после нескольких попыток замолкаем, а признак «есть мод» сервер поставит
-	 * при первом нажатии бинда (резервная команда {@code /wgkey}).</p>
+	 * <p>Если сервер канал не объявил (мост-плагин не установлен), но знает
+	 * команду {@code /wgkey} (сервер WildeGate), здороваемся той же командой —
+	 * сервер отметит мод сразу при входе, ещё до первого нажатия бинда. Если
+	 * команды нет (чужой сервер), молчим: никаких ошибок в чате.</p>
 	 */
 	private void tickHello(Minecraft client) {
 		if (client.player == null || client.level == null) {
@@ -104,7 +110,33 @@ public class WildeGateKeysClient implements ClientModInitializer {
 
 		if (ClientPlayNetworking.canSend(AbilityPayload.TYPE)) {
 			ClientPlayNetworking.send(new AbilityPayload(AbilityPayload.HELLO));
+			helloAttempts = 5; // одного пакета достаточно: TCP доставит его один раз
+			return;
 		}
+
+		// Моста нет, но сервер WildeGate знает /wgkey: командный хендшейк.
+		if (serverKnowsWgKey(client)) {
+			sendFallbackCommand(client, AbilityPayload.HELLO);
+			helloAttempts = 5; // одной попытки достаточно
+		}
+	}
+
+	/**
+	 * Есть ли у сервера команда {@code /wgkey} — признак того, что это сервер
+	 * WildeGate (команда регистрируется скриптом). Дерево команд приходит клиенту
+	 * при входе, поэтому проверка точная и не создаёт ошибок в чате.
+	 */
+	private static boolean serverKnowsWgKey(Minecraft client) {
+		ClientPacketListener connection = client.getConnection();
+		if (connection == null) {
+			return false;
+		}
+		CommandDispatcher<ClientSuggestionProvider> commands = connection.getCommands();
+		if (commands == null) {
+			return false;
+		}
+		CommandNode<ClientSuggestionProvider> root = commands.getRoot();
+		return root.getChild(WildeGateKeys.FALLBACK_COMMAND) != null;
 	}
 
 	private void press(Minecraft client, int ability) {

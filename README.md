@@ -37,8 +37,8 @@
 
 | Файл | Для чего | Что ещё нужно |
 |---|---|---|
-| [`wgkeybinds-fabric-1.0.jar`](https://github.com/bywanthh/wgkeybinds/releases/latest) | Fabric | **Fabric API** |
-| [`wgkeybinds-neoforge-1.0.jar`](https://github.com/bywanthh/wgkeybinds/releases/latest) | NeoForge 21.11.48+ | ничего дополнительно |
+| [`wgkeybinds-fabric-1.1.jar`](https://github.com/bywanthh/wgkeybinds/releases/latest) | Fabric | **Fabric API** |
+| [`wgkeybinds-neoforge-1.1.jar`](https://github.com/bywanthh/wgkeybinds/releases/latest) | NeoForge 21.11.48+ | ничего дополнительно |
 
 Обе сборки лежат на странице **[Releases](https://github.com/bywanthh/wgkeybinds/releases/latest)**
 и в папке [`release`](release) этого репозитория. Хеши SHA-256 — в
@@ -55,6 +55,16 @@
 Сервер устанавливать **не нужно и не нужно просить об этом админов**: мод целиком клиентский,
 серверная часть на WildeGate уже стоит.
 
+## Команда `/wildegatekeybinds`
+
+На сервере WildeGate введите `/wildegatekeybinds`:
+
+* **мод не найден** — придёт кликабельная ссылка на скачивание (Modrinth и GitHub);
+* **мод установлен** — сервер выдаст разовый стартовый набор ресурсов под вашу расу.
+
+Набор даётся один раз на аккаунт. Мод нужен только для того, чтобы сервер мог отличить
+игрока с биндами от игрока без мода — сама награда живёт в серверном скрипте.
+
 ## Как это работает
 
 ```
@@ -65,6 +75,9 @@
 * Мод отправляет серверу **одно короткое число** — ID способности. Ничего больше.
 * Хендшейк при входе нужен, чтобы на сервере у вас сразу отключилась старая механика жестов
   (двойное нажатие F) — тогда **F остаётся обычной сменой рук**, а способности висят только на биндах.
+  Если сервер не объявил канал (плагин-мост не стоит), мод отправляет тот же хендшейк
+  внутренней командой `/wgkey <ник> 0` — но только если сервер её знает. На чужих серверах
+  команды нет, поэтому мод там молчит.
 * Если у игрока мода нет, он может вызвать способности жестами: **F ×2** — способность №1,
   **Shift + F ×2** — способность №2. Обе механики сходятся в один и тот же код на сервере,
   поэтому случайных двойных срабатываний нет.
@@ -95,11 +108,11 @@
 **1. Сверьте хеш скачанного файла** с [`release/SHA256SUMS.txt`](release/SHA256SUMS.txt):
 
 ```powershell
-Get-FileHash .\wgkeybinds-fabric-1.0.jar -Algorithm SHA256   # Windows
+Get-FileHash .\wgkeybinds-fabric-1.1.jar -Algorithm SHA256   # Windows
 ```
 
 ```bash
-sha256sum wgkeybinds-fabric-1.0.jar                          # Linux / macOS
+sha256sum wgkeybinds-fabric-1.1.jar                          # Linux / macOS
 ```
 
 **2. Или соберите сами** — в репозитории есть полные исходники и обёртка Gradle:

@@ -1,8 +1,12 @@
 package ru.wildegate.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -89,8 +93,10 @@ public final class WildeGateKeysClient {
 	 * Серверная часть по нему помечает игрока и отключает старые жесты.
 	 *
 	 * <p>NeoForge не даёт клиенту узнать заранее, объявил ли сервер канал, поэтому
-	 * отправка идёт «best effort»: если мост-плагина нет, после нескольких попыток
-	 * замолкаем, а признак «есть мод» сервер поставит при первом нажатии бинда.</p>
+	 * отправка идёт «best effort». Дополнительно, если сервер знает команду
+	 * {@code /wgkey} (сервер WildeGate), сразу отправляется командный хендшейк:
+	 * мод отмечается при входе даже без плагина-моста. На чужих серверах команды
+	 * нет — там мод молчит.</p>
 	 */
 	private static void tickHello(Minecraft client) {
 		if (client.player == null || client.level == null) {
@@ -116,8 +122,30 @@ public final class WildeGateKeysClient {
 		try {
 			ClientPacketDistributor.sendToServer(new AbilityPayload(AbilityPayload.HELLO));
 		} catch (Throwable ignored) {
-			// сервер не знает канал — маркер поставится при первом нажатии бинда
+			// сервер не знает канал — сработает командный путь ниже
 		}
+
+		if (serverKnowsWgKey(client)) {
+			sendFallbackCommand(client, AbilityPayload.HELLO);
+			helloAttempts = 5; // одной попытки достаточно
+		}
+	}
+
+	/**
+	 * Есть ли у сервера команда {@code /wgkey} — признак сервера WildeGate
+	 * (команда регистрируется скриптом). Дерево команд приходит клиенту при входе.
+	 */
+	private static boolean serverKnowsWgKey(Minecraft client) {
+		ClientPacketListener connection = client.getConnection();
+		if (connection == null) {
+			return false;
+		}
+		CommandDispatcher<ClientSuggestionProvider> commands = connection.getCommands();
+		if (commands == null) {
+			return false;
+		}
+		CommandNode<ClientSuggestionProvider> root = commands.getRoot();
+		return root.getChild(WildeGateKeys.FALLBACK_COMMAND) != null;
 	}
 
 	private static void press(Minecraft client, int ability) {
@@ -132,6 +160,11 @@ public final class WildeGateKeysClient {
 			// соединение не поддерживает пакет — сработает командный путь ниже
 		}
 
+		sendFallbackCommand(client, ability);
+	}
+
+	/** Резервная (невидимая игроку) команда {@code /wgkey <ник> <ID>}. */
+	private static void sendFallbackCommand(Minecraft client, int ability) {
 		if (client.getConnection() == null) {
 			return;
 		}
