@@ -56,7 +56,6 @@ WildeGate: Способности**.
 
 * Исходники и сборки: [github.com/bywanthh/wgkeybinds](https://github.com/bywanthh/wgkeybinds)
 * Discord WildeGate: [discord.gg/ubT3GMsqwh](https://discord.gg/ubT3GMsqwh)
-* Telegram WildeGate: [t.me/WildeGate](https://t.me/WildeGate)
 
 ## Лицензия
 
